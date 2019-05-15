@@ -1,0 +1,7 @@
+#!/bin/bash
+
+echo "Generated supervisord.conf:"
+cat -n supervisord.conf
+
+# Start up the app:
+exec supervisord -c supervisord.conf
