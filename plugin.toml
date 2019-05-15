@@ -1,4 +1,4 @@
 [plugin]
-description = "dokku weasyprint"
+description = "dokku clamav"
 version = "0.1.1"
 [plugin.config]
