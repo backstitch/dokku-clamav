@@ -6,7 +6,7 @@ echo "-----> Installing clamav ..."
 COMMAND=$(cat <<EOF
 echo "-----> install requirements"
 
-apt-add-repository multiverse
+add-apt-repository multiverse
 apt-get -y update
 apt-get install -y clamav clamav-daemon clamav-freshclam libclamunrar9 wget
 
