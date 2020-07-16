@@ -9,6 +9,8 @@ echo "-----> install requirements"
 add-apt-repository multiverse
 apt-get -y update
 apt-get install -y clamav clamav-daemon clamd clamav-freshclam libclamunrar9
+apt-get clean
+rm -rf /var/lib/apt/lists/*
 
 echo "-----> update database"
 freshclam
@@ -16,13 +18,20 @@ echo "-----> Setting permissions"
 mkdir /var/run/clamav
 touch /var/run/clamav/clamd.sock
 touch /var/run/clamav/clamd.ctl
+chown clamav:clamav /var/run/clamav
+chmod 750 /var/run/clamav
 sleep 1 # wait so that docker run has not exited before docker attach
 
-clamd
+sed -i 's/^Foreground .*$/Foreground true/g' /etc/clamav/clamd.conf
+echo "TCPSocket 3310" >> /etc/clamav/clamd.conf
+if ! [ -z $HTTPProxyServer ]; then echo "HTTPProxyServer $HTTPProxyServer" >> /etc/clamav/freshclam.conf; fi
+if ! [ -z $HTTPProxyPort   ]; then echo "HTTPProxyPort $HTTPProxyPort" >> /etc/clamav/freshclam.conf; fi
+sed -i 's/^Foreground .*$/Foreground true/g' /etc/clamav/freshclam.conf
+
 clamav
 EOF
 )
-id=$(docker run -d $IMAGE /bin/bash -e -c "$COMMAND")
+id=$(docker run -d $IMAGE /bin/bash -e -c "$COMMAND" --expose 3310)
 #enable logs
 docker attach $id
 test $(docker wait $id) -eq 0
