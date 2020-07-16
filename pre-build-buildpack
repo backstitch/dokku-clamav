@@ -16,7 +16,8 @@ echo "-----> update database"
 freshclam
 echo "-----> Setting permissions"
 mkdir /var/run/clamav
-apt-add-repository multiverse
+touch /var/run/clamav/clamd.sock
+touch /var/run/clamav/clamd.ctl
 sleep 1 # wait so that docker run has not exited before docker attach
 
 clamav
