@@ -13,6 +13,9 @@ apt-get clean
 rm -rf /var/lib/apt/lists/*
 
 echo "-----> update database"
+systemctl stop clamav-daemon.service
+rm /var/log/clamav/freshclam.log
+systemctl start clamav-daemon.service
 freshclam
 echo "-----> Setting permissions"
 mkdir /var/run/clamav

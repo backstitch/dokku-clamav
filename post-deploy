@@ -6,7 +6,7 @@ APP="$1"; IMAGE="dokku/$APP"
 echo "-----> Installing clamav ..."
 COMMAND=$(cat <<EOF
 echo "-----> start daemon!"
-sudo clamd &
+clamd &
 echo "-----> end daemon!"
 sleep 1 # wait so that docker run has not exited before docker attach
 EOF
