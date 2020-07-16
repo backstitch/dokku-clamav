@@ -15,7 +15,7 @@ rm -rf /var/lib/apt/lists/*
 echo "-----> update database"
 systemctl stop clamav-daemon.service
 rm /var/log/clamav/freshclam.log
-systemctl start clamav-daemon.service
+systemctl start clamav-daemon
 freshclam
 echo "-----> Setting permissions"
 mkdir /var/run/clamav
@@ -26,6 +26,8 @@ chmod 750 /var/run/clamav
 sleep 1 # wait so that docker run has not exited before docker attach
 
 sed -i 's/^Foreground .*$/Foreground true/g' /etc/clamav/clamd.conf
+sed 's/LocalSocketGroup clamav/LocalSocketGroup root/g' /etc/clamav/clamd.conf
+sed 's/User clamav/User root/g' /etc/clamav/clamd.conf
 echo "TCPSocket 3310" >> /etc/clamav/clamd.conf
 if ! [ -z $HTTPProxyServer ]; then echo "HTTPProxyServer $HTTPProxyServer" >> /etc/clamav/freshclam.conf; fi
 if ! [ -z $HTTPProxyPort   ]; then echo "HTTPProxyPort $HTTPProxyPort" >> /etc/clamav/freshclam.conf; fi
