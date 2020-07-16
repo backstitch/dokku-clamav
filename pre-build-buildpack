@@ -8,25 +8,18 @@ echo "-----> install requirements"
 
 apt-add-repository multiverse
 apt-get -y update
-apt-get install --no-install-recommends -y -qq clamav-daemon clamav-freshclam libclamunrar9 wget
+apt-get install -y clamav clamav-daemon clamav-freshclam libclamunrar9 wget
 apt-get clean
 rm -rf /var/lib/apt/lists/*
 
 echo "-----> update database"
-wget -O /var/lib/clamav/main.cvd http://database.clamav.net/main.cvd
-wget -O /var/lib/clamav/daily.cvd http://database.clamav.net/daily.cvd
-wget -O /var/lib/clamav/bytecode.cvd http://database.clamav.net/bytecode.cvd
-chown clamav:clamav /var/lib/clamav/*.cvd
+freshclam
 echo "-----> Setting permissions"
 mkdir /var/run/clamav
-chown clamav:clamav /var/run/clamav
-chmod 750 /var/run/clamav
+apt-add-repository multiverse
 sleep 1 # wait so that docker run has not exited before docker attach
-sed -i 's/^Foreground .*$/Foreground true/g' /etc/clamav/clamd.conf
-echo "TCPSocket 3310" >> /etc/clamav/clamd.conf
-if ! [ -z $HTTPProxyServer ]; then echo "HTTPProxyServer $HTTPProxyServer" >> /etc/clamav/freshclam.conf; fi
-if ! [ -z $HTTPProxyPort   ]; then echo "HTTPProxyPort $HTTPProxyPort" >> /etc/clamav/freshclam.conf; fi
-sed -i 's/^Foreground .*$/Foreground true/g' /etc/clamav/freshclam.conf
+
+clamav
 EOF
 )
 id=$(docker run -d $IMAGE /bin/bash -e -c "$COMMAND")
