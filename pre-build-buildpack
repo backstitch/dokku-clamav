@@ -8,32 +8,27 @@ echo "-----> install requirements"
 
 add-apt-repository multiverse
 apt-get -y update
-apt-get install --no-install-recommends -y -qq clamav clamav-daemon clamav-freshclam libclamunrar9 ca-certificates netcat-openbsd
-apt-get clean
-rm -rf /var/lib/apt/lists/*
+apt-get install -y clamav
 
 echo "-----> update database"
-wget -O /var/lib/clamav/main.cvd http://database.clamav.net/main.cvd
-wget -O /var/lib/clamav/daily.cvd http://database.clamav.net/daily.cvd
-wget -O /var/lib/clamav/bytecode.cvd http://database.clamav.net/bytecode.cvd
-chown clamav:clamav /var/lib/clamav/*.cvd
+touch /usr/local/etc/clamav/freshclam.conf
+touch /usr/local/etc/clamav/clamd.conf
+
+echo "DatabaseMirror database.clamav.net" >> /usr/local/etc/clamav/freshclam.conf
+echo "LocalSocket /usr/local/var/run/clamav/clamd.sock" >> /usr/local/etc/clamav/clamd.conf
+
+freshclam -v
 
 echo "-----> Setting permissions"
-mkdir /var/run/clamav
-chown clamav:clamav /var/run/clamav
-chmod 750 /var/run/clamav
+chown clamav /usr/local/var/run/clamav/
+chmod 775 /usr/local/var/run/clamav/
+export PATH=/usr/local/sbin:$PATH
+
 sleep 1 # wait so that docker run has not exited before docker attach
 
-sed -i 's/^Foreground .*$/Foreground true/g' /etc/clamav/clamd.conf
-sed 's/LocalSocketGroup clamav/LocalSocketGroup root/g' /etc/clamav/clamd.conf
-sed 's/User clamav/User root/g' /etc/clamav/clamd.conf
-echo "TCPSocket 3310" >> /etc/clamav/clamd.conf
-if ! [ -z $HTTPProxyServer ]; then echo "HTTPProxyServer $HTTPProxyServer" >> /etc/clamav/freshclam.conf; fi
-if ! [ -z $HTTPProxyPort   ]; then echo "HTTPProxyPort $HTTPProxyPort" >> /etc/clamav/freshclam.conf; fi
-sed -i 's/^Foreground .*$/Foreground true/g' /etc/clamav/freshclam.conf
 EOF
 )
-id=$(docker run --expose 3310 -d $IMAGE /bin/bash -e -c "$COMMAND")
+id=$(docker run -d $IMAGE /bin/bash -e -c "$COMMAND")
 #enable logs
 docker attach $id
 test $(docker wait $id) -eq 0
