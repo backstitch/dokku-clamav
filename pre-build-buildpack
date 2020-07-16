@@ -27,8 +27,6 @@ echo "TCPSocket 3310" >> /etc/clamav/clamd.conf
 if ! [ -z $HTTPProxyServer ]; then echo "HTTPProxyServer $HTTPProxyServer" >> /etc/clamav/freshclam.conf; fi
 if ! [ -z $HTTPProxyPort   ]; then echo "HTTPProxyPort $HTTPProxyPort" >> /etc/clamav/freshclam.conf; fi
 sed -i 's/^Foreground .*$/Foreground true/g' /etc/clamav/freshclam.conf
-
-clamav
 EOF
 )
 id=$(docker run -d $IMAGE /bin/bash -e -c "$COMMAND" --expose 3310)
