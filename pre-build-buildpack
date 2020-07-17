@@ -6,23 +6,20 @@ echo "-----> Installing clamav ..."
 COMMAND=$(cat <<EOF
 echo "-----> install requirements"
 
-add-apt-repository multiverse
-apt-get -y update
-apt-get install -y clamav
+apt-get install -y clamav clamav-daemon
 
 echo "-----> update database"
+mkdir /usr/local/etc/clamav
 touch /usr/local/etc/clamav/freshclam.conf
 touch /usr/local/etc/clamav/clamd.conf
 
-echo "DatabaseMirror database.clamav.net" >> /usr/local/etc/clamav/freshclam.conf
-echo "LocalSocket /usr/local/var/run/clamav/clamd.sock" >> /usr/local/etc/clamav/clamd.conf
-
+cd /usr/local/etc/clamav
+echo "DatabaseMirror database.clamav.net" >> freshclam.conf 
 freshclam -v
 
-echo "-----> Setting permissions"
-chown clamav /usr/local/var/run/clamav/
-chmod 775 /usr/local/var/run/clamav/
-export PATH=/usr/local/sbin:$PATH
+echo "LocalSocket /usr/local/var/run/clamav/clamd.sock" >> clamd.conf
+
+clamd &
 
 sleep 1 # wait so that docker run has not exited before docker attach
 
