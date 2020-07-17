@@ -2,6 +2,8 @@
 
 set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
 APP="$1"; IMAGE="dokku/$APP"
+echo APP
+echo ID
 echo "-----> Installing clamav ..."
 COMMAND=$(cat <<EOF
 echo "-----> install requirements"
