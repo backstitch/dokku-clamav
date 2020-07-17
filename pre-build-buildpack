@@ -8,18 +8,25 @@ echo "-----> install requirements"
 
 apt-get install -y clamav clamav-daemon
 
-echo "-----> update database"
 mkdir /usr/local/etc/clamav
+
+# clamdscan is needed for the gem to get the clamav scanner
+mkdir /usr/bin/clamdscan
+chown clamav /usr/bin/clamdscan
+chmod 775 /usr/bin/clamdscan
+
+# Configure clamav daemon and updater
 touch /usr/local/etc/clamav/freshclam.conf
 touch /usr/local/etc/clamav/clamd.conf
 
 cd /usr/local/etc/clamav
+echo "-----> update database"
 echo "DatabaseMirror database.clamav.net" >> freshclam.conf 
-freshclam -v
+freshclam -v # Run updater
 
 echo "LocalSocket /usr/local/var/run/clamav/clamd.sock" >> clamd.conf
 
-clamd &
+clamd & # Start daemon
 
 sleep 1 # wait so that docker run has not exited before docker attach
 
