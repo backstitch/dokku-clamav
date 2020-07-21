@@ -11,7 +11,8 @@ apt-get update
 apt-get install -y software-properties-common
 apt-get update
 add-apt-repository multiverse
-apt-get install -y clamav clamav-daemon
+apt-get install -y clamav clamav-daemon clamav-freshclam
+apt-get clean
 
 echo "-----> Update database"
 wget -O /var/lib/clamav/main.cvd http://database.clamav.net/main.cvd && \
