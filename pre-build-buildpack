@@ -7,6 +7,11 @@ echo ID
 echo "-----> Installing clamav ..."
 COMMAND=$(cat <<EOF
 echo "-----> install requirements"
+echo "deb http://http.debian.net/debian/ $DEBIAN_VERSION main contrib non-free" > /etc/apt/sources.list && \
+    echo "deb http://http.debian.net/debian/ $DEBIAN_VERSION-updates main contrib non-free" >> /etc/apt/sources.list && \
+    echo "deb http://security.debian.org/ $DEBIAN_VERSION/updates main contrib non-free" >> /etc/apt/sources.list
+apt-get -y update
+
 apt-get install -y clamav clamav-daemon
 
 echo "-----> Update database"
