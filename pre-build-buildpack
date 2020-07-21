@@ -7,9 +7,7 @@ echo ID
 echo "-----> Installing clamav ..."
 COMMAND=$(cat <<EOF
 echo "-----> install requirements"
-# echo "deb http://archive.ubuntu.com trusty main universe multiverse" > /etc/apt/sources.list && \
-#     echo "deb http://archive.ubuntu.com trusty-updates main universe multiverse" >> /etc/apt/sources.list && \
-#     echo "deb http://archive.ubuntu.com trusty-security main universe multiverse" >> /etc/apt/sources.list
+apt-get update
 apt-get install -y software-properties-common
 apt-get update
 add-apt-repository multiverse
