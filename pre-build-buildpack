@@ -8,9 +8,9 @@ echo "-----> Installing clamav ..."
 COMMAND=$(cat <<EOF
 echo "-----> install requirements"
 apt-get update
-echo "deb http://http.debian.net/debian/ stretch main contrib non-free" > /etc/apt/sources.list && \
-    echo "deb http://http.debian.net/debian/ stretch-updates main contrib non-free" >> /etc/apt/sources.list && \
-    echo "deb http://security.debian.org/ stretch/updates main contrib non-free" >> /etc/apt/sources.list
+echo "deb http://http.debian.net/debian/ trusty main contrib non-free" > /etc/apt/sources.list && \
+    echo "deb http://http.debian.net/debian/ trusty-updates main contrib non-free" >> /etc/apt/sources.list && \
+    echo "deb http://security.debian.org/ trusty/updates main contrib non-free" >> /etc/apt/sources.list
 apt-get update
 apt-get install -y clamav clamav-daemon
 
