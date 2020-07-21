@@ -30,9 +30,6 @@ sed -i 's/^Foreground .*$/Foreground true/g' /etc/clamav/clamd.conf && \
     if ! [ -z $HTTPProxyServer ]; then echo "HTTPProxyServer $HTTPProxyServer" >> /etc/clamav/freshclam.conf; fi && \
     if ! [ -z $HTTPProxyPort   ]; then echo "HTTPProxyPort $HTTPProxyPort" >> /etc/clamav/freshclam.conf; fi && \
     sed -i 's/^Foreground .*$/Foreground true/g' /etc/clamav/freshclam.conf
-    
-echo "-----> Run clamav daemon"
-clamd &
 
 sleep 1 # wait so that docker run has not exited before docker attach
 
