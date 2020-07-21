@@ -7,28 +7,28 @@ echo ID
 echo "-----> Installing clamav ..."
 COMMAND=$(cat <<EOF
 echo "-----> install requirements"
-
 apt-get install -y clamav clamav-daemon
 
-mkdir /usr/local/etc/clamav
+echo "-----> Update database"
+wget -O /var/lib/clamav/main.cvd http://database.clamav.net/main.cvd && \
+    wget -O /var/lib/clamav/daily.cvd http://database.clamav.net/daily.cvd && \
+    wget -O /var/lib/clamav/bytecode.cvd http://database.clamav.net/bytecode.cvd && \
+    chown clamav:clamav /var/lib/clamav/*.cvd
 
-# clamdscan is needed for the gem to get the clamav scanner
-mkdir /usr/bin/clamdscan
-chown clamav /usr/bin/clamdscan
-chmod 775 /usr/bin/clamdscan
+echo "-----> Set permissions"
+mkdir /var/run/clamav && \
+    chown clamav:clamav /var/run/clamav && \
+    chmod 777 /var/run/clamav
 
-# Configure clamav daemon and updater
-touch /usr/local/etc/clamav/freshclam.conf
-touch /usr/local/etc/clamav/clamd.conf
-
-cd /usr/local/etc/clamav
-echo "-----> update database"
-echo "DatabaseMirror database.clamav.net" >> freshclam.conf 
-freshclam -v # Run updater
-
-echo "LocalSocket /usr/local/var/run/clamav/clamd.sock" >> clamd.conf
-
-clamd & # Start daemon
+echo "-----> Update configuration"
+sed -i 's/^Foreground .*$/Foreground true/g' /etc/clamav/clamd.conf && \
+    echo "TCPSocket 3310" >> /etc/clamav/clamd.conf && \
+    if ! [ -z $HTTPProxyServer ]; then echo "HTTPProxyServer $HTTPProxyServer" >> /etc/clamav/freshclam.conf; fi && \
+    if ! [ -z $HTTPProxyPort   ]; then echo "HTTPProxyPort $HTTPProxyPort" >> /etc/clamav/freshclam.conf; fi && \
+    sed -i 's/^Foreground .*$/Foreground true/g' /etc/clamav/freshclam.
+    
+echo "-----> Run clamav daemon"
+clamd &
 
 sleep 1 # wait so that docker run has not exited before docker attach
 

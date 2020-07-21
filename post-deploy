@@ -13,8 +13,8 @@ EOF
 )
 
 # /etc/init.d/clamav-daemon start
-id=$(docker run -d $IMAGE /bin/bash -e -c "$COMMAND")
-#enable logs
-docker attach $id
-test $(docker wait $id) -eq 0
-docker commit $id $IMAGE > /dev/null
+# id=$(docker run -d $IMAGE /bin/bash -e -c "$COMMAND")
+# #enable logs
+# docker attach $id
+# test $(docker wait $id) -eq 0
+# docker commit $id $IMAGE > /dev/null
