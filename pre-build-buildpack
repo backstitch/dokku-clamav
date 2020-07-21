@@ -33,6 +33,13 @@ sed -i 's/^Foreground .*$/Foreground true/g' /etc/clamav/clamd.conf && \
 
 clamd &
 
+if [ "$(echo PING | nc localhost 3310)" = "PONG" ]; then
+    echo "ping successful"
+else
+    echo 1>&2 "ping failed"
+    sleep 30
+fi
+
 sleep 1 # wait so that docker run has not exited before docker attach
 
 EOF
