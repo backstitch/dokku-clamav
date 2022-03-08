@@ -7,6 +7,9 @@ echo ID
 echo "-----> Installing clamav ..."
 COMMAND=$(cat <<EOF
 echo "-----> install requirements"
+
+grep -v "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main" /etc/apt/sources.list > temp.txt; mv temp.txt /etc/apt/sources.list
+
 apt-get update
 apt-get install -y software-properties-common
 apt-get update
