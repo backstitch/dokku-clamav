@@ -2,20 +2,37 @@
 
 set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
 APP="$1"; IMAGE="dokku/$APP"
+echo APP
+echo ID
 echo "-----> Installing clamav ..."
 COMMAND=$(cat <<EOF
 echo "-----> install requirements"
-
-apt-get -y update
+apt-get update
+apt-get install -y software-properties-common
+apt-get update
+add-apt-repository multiverse
 apt-get install -y clamav clamav-daemon
 
-echo "-----> update database"
-freshclam
-echo "-----> create file clamd.sock"
-mkdir /var/run/clamav
-touch /var/run/clamav/clamd.sock
-touch /var/run/clamav/clamd.ctl
+echo "-----> Update database"
+wget -O /var/lib/clamav/main.cvd http://database.clamav.net/main.cvd && \
+    wget -O /var/lib/clamav/daily.cvd http://database.clamav.net/daily.cvd && \
+    wget -O /var/lib/clamav/bytecode.cvd http://database.clamav.net/bytecode.cvd && \
+    chown clamav:clamav /var/lib/clamav/*.cvd
+
+echo "-----> Set permissions"
+mkdir /var/run/clamav && \
+    chown clamav:clamav /var/run/clamav && \
+    chmod 777 /var/run/clamav
+
+echo "-----> Update configuration"
+sed -i 's/^Foreground .*$/Foreground true/g' /etc/clamav/clamd.conf && \
+    echo "TCPSocket 3310" >> /etc/clamav/clamd.conf && \
+    if ! [ -z $HTTPProxyServer ]; then echo "HTTPProxyServer $HTTPProxyServer" >> /etc/clamav/freshclam.conf; fi && \
+    if ! [ -z $HTTPProxyPort   ]; then echo "HTTPProxyPort $HTTPProxyPort" >> /etc/clamav/freshclam.conf; fi && \
+    sed -i 's/^Foreground .*$/Foreground true/g' /etc/clamav/freshclam.conf
+
 sleep 1 # wait so that docker run has not exited before docker attach
+
 EOF
 )
 id=$(docker run -d $IMAGE /bin/bash -e -c "$COMMAND")
