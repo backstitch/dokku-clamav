@@ -32,6 +32,10 @@ make check VG=1 > /dev/null 2>&1 && \
 make install > /dev/null 2>&1
 echo "-----> Make Complete"
 
+echo "-----> Cleanup downloads"
+cd / && \
+rm -rf clamav-0.103.5.tar.gz clamav-0.103.5
+
 echo "-----> Update configurations and database"
 ldconfig &&\
 clamconf -g freshclam.conf > freshclam.conf && \
