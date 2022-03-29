@@ -26,10 +26,10 @@ tar xzf clamav-0.103.5.tar.gz && \
 cd clamav-0.103.5 && \
 mkdir build && cd build && \
 echo "-----> Making"
-../configure && \
-make && \
-make check VG=1 && \
-make install
+../configure > /dev/null 2>&1 && \
+make > /dev/null 2>&1 && \
+make check VG=1 > /dev/null 2>&1 && \
+make install > /dev/null 2>&1
 echo "-----> Make Complete"
 
 echo "-----> Update configurations and database"
