@@ -25,18 +25,20 @@ wget https://www.clamav.net/downloads/production/clamav-0.103.5.tar.gz && \
 tar xzf clamav-0.103.5.tar.gz && \
 cd clamav-0.103.5 && \
 mkdir build && cd build && \
+echo "-----> Making"
 ../configure && \
 make && \
 make check VG=1 && \
 make install
+echo "-----> Make Complete"
 
 echo "-----> Update configurations and database"
+ldconfig
 clamconf -g freshclam.conf > freshclam.conf && \
 clamconf -g clamd.conf > clamd.conf
 
 sed -i 's/^Example/#Example/g' /usr/local/etc/freshclam.conf && \
-sed -i 's/^Example/#Example/g' /usr/local/etc/clamd.conf
-
+sed -i 's/^Example/#Example/g' /usr/local/etc/clamd.conf && \
 sed -i 's/^Foreground .*$/Foreground true/g' /usr/local/etc/clamd.conf && \
 echo "TCPSocket 3310" >> /usr/local/etc/clamd.conf && \
 if ! [ -z $HTTPProxyServer ]; then echo "HTTPProxyServer $HTTPProxyServer" >> /usr/local/etc/freshclam.conf; fi && \
