@@ -35,7 +35,10 @@ echo "-----> Make Complete"
 echo "-----> Update configurations and database"
 ldconfig &&\
 clamconf -g freshclam.conf > freshclam.conf && \
-clamconf -g clamd.conf > clamd.conf
+clamconf -g clamd.conf > clamd.conf && \
+cp freshclam.conf.sample freshclam.conf && \
+cp clamd.conf.sample clamd.conf && \
+rm freshclam.conf.sample clamd.conf.sample
 
 echo "-----> Update Owners"
 chown clamav:clamav /usr/local/etc/freshclam.conf && \
